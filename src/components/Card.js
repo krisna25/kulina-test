@@ -1,16 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'; 
 import {Button} from "./../theme/globalStyle";
-import {  Container ,Row, Col } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import StarRatingComponent from 'react-star-rating-component';
+import IconC from './../components/IconPlace'
 
-
-
-const IconC = ({ className }) => (
-<i className={className}>
-    
-</i>
-);
 
 const HalftStar = styled(IconC)`
     font-size:12px !important;
@@ -128,9 +122,24 @@ class ProductCard extends React.Component {
         image : 'assets/img/food1.jpg',
         category:''
       };
+        this.onHandleCardClick = this.onHandleCardClick.bind(this)
+
     }
 
+    onHandleCardClick(e,url){
+        e.preventDefault()
+        try {
+            console.log("card clik ",url)
+        } catch (error) {
+            
+        }
+    }
+  
     componentDidMount(){
+        const { childRef } = this.props;
+        console.log("this props ", this.props);
+        
+        childRef(this);
         this.setState({
             rating: this.props.RatingValue ? this.props.RatingValue : 0,
             onClick: this.props.onClick ? this.props.onClick : "/",
@@ -141,16 +150,18 @@ class ProductCard extends React.Component {
             category:this.props.category ? this.props.category : '----'
         })
     }
+
+
    
     onStarClick(nextValue, prevValue, name) {
       this.setState({rating: nextValue});
     }
    
     render() {
-      const { rating, onClick, price, productnName, descProduct, image , category} = this.state;
+      const { rating, price, productnName, descProduct, image , category} = this.state;
       
       return (                
-        <Card onClick={onClick} > 
+        <Card  > 
             <ImgContainer>
                 <CardImage src={image} ></CardImage>
             </ImgContainer>
@@ -181,8 +192,8 @@ class ProductCard extends React.Component {
                             <PriceValue>Rp. {price}</PriceValue>
                         </Col>
                         <Col sm="6" md="6" xs="6" > 
-                            <CartContainer>
-                                <CartButton>ADD <Icon className ="fa fa-plus"></Icon></CartButton>
+                            <CartContainer >
+                                <CartButton onClick={this.props.cardAction}>ADD <Icon className ="fa fa-plus"></Icon></CartButton>
                             </CartContainer>
                         </Col>
                     </Row>

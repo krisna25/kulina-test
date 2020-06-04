@@ -1,10 +1,15 @@
 import React, { Component } from "react";
+import { Row, Col, Modal, ModalBody, ModalFooter  } from 'reactstrap';
 import styled, { keyframes, ThemeProvider } from "styled-components";
 import {Helmet} from "react-helmet";
 import { theme1, theme2, Button, GlobalStyle } from "./theme/globalStyle";
 import ThemeSelect from "./components/ThemeSelect";
 import GlobalFonts from './fonts/fonts';
-import Card from './components/Card'
+import Card from './components/Card';
+import Header from './layout/HeaderApp';
+import ModalChart from './components/ModalCart'
+
+
 // import DatePicker from './components/Date'
 
 const logo =
@@ -96,6 +101,20 @@ const TabButtonRight =  styled(Button)`
     border-left-width: 0px;
     border-color: #f1f1f2;
     color: #e2e4e4;
+    background:${
+      props => !props.active ?
+          `#424749` :
+          "#fff"};
+    border-color:${
+      props => !props.active ?
+          `#424749` :
+          "#f1f1f2;"};
+    &:hover {
+      transform: translateY(1px);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+      background: #424749;
+      border-color: #424749;
+  }
 `;
 
 
@@ -111,7 +130,22 @@ const TabButtonLeft =  styled(Button)`
     border-bottom-left-radius: 4px;
     border-top-left-radius: 4px;
     border-right-width: 0px;
-}
+    color: #f1f1f2;
+    background:${
+      props => props.active ?
+          `#424749` :
+          "#fff"};
+    border-color:${
+      props => props.active ?
+          `#424749` :
+          "#f1f1f2;"};
+    &:hover {
+      transform: translateY(1px);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+      background: #424749;
+      border-color: #424749;
+  }
+ 
 `;
 
 const TabBox = styled.div`
@@ -124,19 +158,79 @@ const TabHeader = styled.div`
 
 const TabBody = styled.div`
 
+
 `
 
+const AppHeaders = styled.div`
+
+`
+const ModalPlace = styled.div`
+
+`
 
 class App extends Component {
-  state = {
-    theme: theme1
-  };
+  constructor() {
+    super();
+    this.state = {
+      tabToggle:true,
+      theme: theme1,
+      stickyCart:false,
+      modal:false
+    };
+    this.ohHandelTabAction = this.ohHandelTabAction.bind(this);
+    this.onHandleCartClick = this.onHandleCartClick.bind(this)
+    this.onHandleModalLocation = this.onHandleModalLocation.bind(this)
+
+  }
+
+  onHandleModalLocation(e){
+    e.preventDefault()
+    try {
+        console.log("location clik ")
+        this.setState({
+          modal:!this.state.modal,
+        })
+    } catch (error) {
+        
+    }
+}
+
+  onHandleCartClick(e,url){
+      e.preventDefault()
+      try {
+          console.log("CART clik ",url)
+          this.setState({
+            stickyCart:true,
+          })
+      } catch (error) {
+          
+      }
+  }
+
+
+  ohHandelTabAction(e,id){
+    e.preventDefault();
+    try {
+      console.log("tab ", id);
+      this.setState({
+        tabToggle: id === 1 ? true : false,
+      })
+      
+      console.log("tab ", this.state.tabToggle);
+
+    } catch (error) {
+      
+    }
+  }
+
+
   handleThemeChange = e => {
     let theme = e.target.value;
     theme === "theme1" ? (theme = theme1) : (theme = theme2);
     this.setState({ theme });
   };
   render() {
+    const {tabToggle,stickyCart,modal} = this.state;
     return (
       <ThemeProvider theme={this.state.theme}>
         <GlobalFonts />
@@ -155,79 +249,139 @@ class App extends Component {
                 />
         </Helmet>
         <AppWrapper>
+          <Header  locationAction={this.onHandleModalLocation}/>
           <TabBox>
             <TabHeader>
-              <TabButtonLeft>Lunch</TabButtonLeft><TabButtonRight>Dinner</TabButtonRight>
+              <TabButtonLeft  active={tabToggle}  onClick={(e)=> this.ohHandelTabAction(e,1)}>Lunch</TabButtonLeft><TabButtonRight active={tabToggle} onClick={(e)=> this.ohHandelTabAction(e,2)}>Dinner</TabButtonRight>
             </TabHeader>
-            <TabBody TabId ={1}>
+            <TabBody TabId ={1} style={tabToggle  ? {} : { display: "none"}}>
               <DateContainer>
                   <DateText>Kamis, 25 januari 2020</DateText>
               </DateContainer>
-              <Card
-                RatingValue={4.5}
-                onClick={""}
-                productnName ={"Fresh Vegetable"}
-                descProduct = {"by Kulina"}
-                category = {'Uptown Lunch'}
-                price = {"20.000"}
-                image = {"assets/img/food1.jpg"}
-              />
-              <Card
-                RatingValue={3.5}
-                onClick={"/"}
-                productnName ={"Healty food"}
-                descProduct = {"by Kulina"}
-                price = {"50.000"}
-                image = {"assets/img/food2.jpg"}
-                category = {'Uptown Lunch'}
-              />
+              <Row>
+                <Col sm='12' md='6' xl='3' xs='12'  >
+                    <Card
+                    RatingValue={4.5}
+                    onClick={""}
+                    productnName ={"Fresh Vegetable"}
+                    descProduct = {"by Kulina"}
+                    category = {'Uptown Lunch'}
+                    price = {"20.000"}
+                    image = {"assets/img/food1.jpg"}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+                <Col sm='12' md='6' xl='3' xs='12'  >
+                    <Card
+                    RatingValue={3.5}
+                    onClick={"/"}
+                    productnName ={"Healty food"}
+                    descProduct = {"by Kulina"}
+                    price = {"50.000"}
+                    image = {"assets/img/food2.jpg"}
+                    category = {'Uptown Lunch'}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+
+                  />
+                </Col>
+                 <Col sm='12' md='6' xl='3' xs='12'  >
+                    <Card
+                    RatingValue={4.5}
+                    onClick={""}
+                    productnName ={"Fresh Vegetable"}
+                    descProduct = {"by Kulina"}
+                    category = {'Uptown Lunch'}
+                    price = {"20.000"}
+                    image = {"assets/img/food1.jpg"}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+                <Col sm='12' md='6' xl='3' xs='12' >
+                    <Card
+                    RatingValue={3.5}
+                    onClick={"/"}
+                    productnName ={"Healty food"}
+                    descProduct = {"by Kulina"}
+                    price = {"50.000"}
+                    image = {"assets/img/food2.jpg"}
+                    category = {'Uptown Lunch'}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+              </Row>
             </TabBody>
-            <TabBody TabId ={2}>
+            <TabBody TabId ={2} style={!tabToggle  ? {} : { display: "none"}}>
               <DateContainer>
                   <DateText>Kamis, 25 januari 2020</DateText>
               </DateContainer>
-              <Card
-                RatingValue={4.5}
-                onClick={""}
-                productnName ={"Pizza yummy"}
-                descProduct = {"by Kulina"}
-                category = {'Uptown Dinner'}
-                price = {"60.000"}
-                image = {"assets/img/food3.jpg"}
-              />
-              <Card
-                RatingValue={2.5}
-                onClick={"/"}
-                productnName ={"Healty Dinner"}
-                descProduct = {"by Kulina"}
-                price = {"45.000"}
-                image = {"assets/img/food4.jpg"}
-                category = {'Uptown Dinner'}
-              />
+                <Row>
+                <Col sm='12' md='6' xl='3' xs='12'  >
+                  <Card
+                    RatingValue={4.5}
+                    onClick={""}
+                    productnName ={"Pizza yummy"}
+                    descProduct = {"by Kulina"}
+                    category = {'Uptown Dinner'}
+                    price = {"60.000"}
+                    image = {"assets/img/food3.jpg"}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+                <Col sm='12' md='6' xl='3' xs='12'  >
+                  <Card
+                    RatingValue={2.5}
+                    onClick={"/"}
+                    productnName ={"Healty Dinner"}
+                    descProduct = {"by Kulina"}
+                    price = {"45.000"}
+                    image = {"assets/img/food4.jpg"}
+                    category = {'Uptown Dinner'}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+                <Col sm='12' md='6' xl='3' xs='12'  >
+                  <Card
+                    RatingValue={4.5}
+                    onClick={""}
+                    productnName ={"Pizza yummy"}
+                    descProduct = {"by Kulina"}
+                    category = {'Uptown Dinner'}
+                    price = {"60.000"}
+                    image = {"assets/img/food3.jpg"}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+                <Col sm='12' md='6' xl='3' xs='12'  >
+                  <Card
+                    RatingValue={2.5}
+                    onClick={"/"}
+                    productnName ={"Healty Dinner"}
+                    descProduct = {"by Kulina"}
+                    price = {"45.000"}
+                    image = {"assets/img/food4.jpg"}
+                    category = {'Uptown Dinner'}
+                    childRef={ ref => (this.child = ref) }
+                    cardAction = {this.onHandleCartClick}
+                  />
+                </Col>
+              </Row>
             </TabBody>
           </TabBox>
-       
-          {/* <AppHeader>
-            <AppLogo src={logo} alt="logo" />
-            <AppTitle>Welcome to React</AppTitle>
-          </AppHeader>
-          <AppIntro>
-            Bootstrapped with{" "}
-            <Underline>
-              <code>create-react-app</code>
-            </Underline>.
-          </AppIntro>
-          <AppIntro>
-            Components styled with{" "}
-            <Underline>
-              <code>styled-components</code>
-            </Underline>{" "}
-            <EmojiWrapper aria-label="nail polish">💅</EmojiWrapper>
-          </AppIntro>
-          <Button>Normal Button</Button>
-          <Button primary>Primary Button</Button>
-          <ThemeSelect handleThemeChange={this.handleThemeChange} />
-          <BigButt>Big Button</BigButt> */}
+          <ModalPlace style={stickyCart  ? {} : { display: "none"}}>
+              <ModalChart/>
+            </ModalPlace>
+          <Modal isOpen={modal} toggle={this.onHandleModalLocation} >
+            <ModalBody>
+              modal
+            </ModalBody>
+          </Modal>
         </AppWrapper>
       </ThemeProvider>
     );

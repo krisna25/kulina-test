@@ -2,6 +2,7 @@ import styled, { createGlobalStyle , css } from 'styled-components';
 import Roboto_woff2 from './../fonts/Roboto.woff2';
 import Roboto_woff from './../fonts/Roboto.woff';
 
+
 export const theme1 = {
     primary: '#ff0198',
     secondary: '#01c1d6',
@@ -50,7 +51,9 @@ export const Button = styled.button`
   &:hover {
     transform: translateY(1px);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    background: #424749;
   }
+  
 `;
 
 // export const ButtonTab = styled.button`
